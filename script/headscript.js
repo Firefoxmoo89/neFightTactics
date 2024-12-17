@@ -12,7 +12,7 @@ class card {
 const deckData = [new card(0,"Assassin"),
 	new card(1,"Extra Skill"),new card(2,"Extra Skill"),
 	new card(3,"Reinforcements"),new card(4,"Reinforcements"),new card(5,"Reinforcements"),new card(6,"Reinforcements"),
-	new card("","Protection"),new card("","Protection")
+	new card("P","Protection"),new card("","Protection")
 ];
 for (let value=0;value<7;value++) {
 	for (let count=0;count<9;count++) {	deckData.push(new card(value)) }
