@@ -4,14 +4,24 @@ body {
 	width: 100%; height: 100%; 
 	margin: 0; padding: 0;
 }
+:root {
+	--falu-red: #791C20ff;
+	--tangerine: #F58B20ff;
+	--rusty-red: #D9444Dff;
+	--burgundy: #74191Fff;
+	--ash-gray: #C7CDC3ff;
+}
+
+/* --------------- common spaces -------------- */
 div#common {
-	position: fixed; top: 10px;
+	position: fixed; top: 0px;
 	width: 100%; height: 50%;
+	padding: 10px;
 	display: flex; justify-content: start; align-items: center; flex-flow: column nowrap;
 } div#common > div {
 	width: 900px; max-width: 98%; display: flex; justify-content: center; align-items: center; flex-flow: column nowrap;
 }
-#deck { background-image:url("../image/back.png"); border: 1px solid #aaa; border-radius: 15px; }
+#deck { background-image:url("../image/back.png"); border-radius: 15px; }
 div#drawContainer {
 	position: fixed; top: 20px; z-index: 99; width: 100vw;
 	display: flex; align-items: center; justify-content: center;
@@ -19,26 +29,36 @@ div#drawContainer {
 #draw div.card {
 	box-shadow: 10px 10px 10px 15px;
 }
-h1#score {
-	color: #eee;
-	background-color: #bb2222;
-	padding: 5px 20px;
-	border-radius: 15px;
-	cursor: pointer;
+
+/* ---------- Other Players ----------------- */
+div#others {
+	position: fixed; top: 0px;
+	height: 100vh; width: 20vw;
+	padding: 10px;
+	display: flex; flex-flow: column nowrap; justify-content: start;
+} 
+div#others > div {
+	background-color: #791c219e;
+	margin: 5px; padding: 10px;
+	border-radius: 10px;
 }
-div.hand {
-	position: fixed; bottom: 10px;
+div#others > div > div {
+	width: 900px; max-width: 100%;
+}
+div.playerIcon { background-image: url("../image/smileyface.png"); width: 50px; height: 50px; margin: auto; background-size: cover }
+
+/* ------------- Players hand ----------- */
+div#myHand {
+	position: fixed; bottom: 0px;
 	width: 100%; height: 50%;
+	padding: 10px;
 	display: flex; justify-content: center; align-items: center;
-} div.hand > div {
+} div#myHand > div {
 	width: 900px; max-width: 98%;
 }
 div.row {
 	display: flex; justify-content: center; align-items: center; flex-flow: row nowrap;
 	width: 100%;
-}
-div.column {
-	display: flex; justify-content: center; align-items: center; flex-flow: column nowrap;
 }
 div.slot {
 	margin: 5px;
@@ -53,21 +73,21 @@ div.slot {
 div.card {
 	position: relative;
 	padding: 5px;
-	border: 1px solid #aaa; border-radius: 15px;
+	border-radius: 15px;
 	width: 100%; height: 100%;
 	display: flex; justify-content: center; align-items: center;
-	background-color: #eee; 
+	background-color: var(--ash-gray); 
 } div.card[data-flipped="true"] { padding: 0 }
 div.card > h1 {
 	position: absolute; top: 0; left: 5px;
 	margin: 0; padding: 0;
-	font-size: 3em; color: #bb2222;
-	-webkit-text-stroke: 1px #eee;
+	font-size: 3em; color: var(--falu-red);
+	-webkit-text-stroke: 1px var(--ash-gray);
 } 
 div.card > h2 {
 	position: absolute; top: 5px;
 	margin: 0; padding: 0;
-	font-size: 1em; color:#bb2222;
+	font-size: 1em; color: var(--falu-red);
 }
 div.card[data-flipped="true"] > h1, div.card[data-flipped="true"] > h2 { display: none !important }
 div.card > div.img {

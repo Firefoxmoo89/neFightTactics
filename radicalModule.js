@@ -1,5 +1,5 @@
 // This module is for all personal basic functions for nodejs
-var fs = require("fs"); var formidable = require("formidable");
+var fs = require("fs"); //var formidable = require("formidable");
 
 exports.servePage = (page,status,headers,response,direct=false) => {
   // Responds to request with an html document
