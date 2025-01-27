@@ -63,9 +63,7 @@ function startTurn() {
 	} else if (player.id = "myHand") {
 		drawAction();
 	}
-	
 }
-
 
 function includeListener(element,event,daFunction) {
 	element.addEventListener(event,daFunction);
@@ -77,12 +75,23 @@ function purgeListeners() {
 	} window.listenerList = [];
 }
 
+function moveCard(element,destination) {
+	element.classList.remove("moveCard");
+	cardCoord = element.getBoundingClientRect();
+	element.style.setProperty("--cardX",cardCoord["x"]); element.style.setProperty("--cardY",cardCoord["y"]);
+	destCoord = destination.getBoundingClientRect();
+	element.style.setProperty("--destX",destCoord["x"]); element.style.setProperty("--destY",destCoord["y"]); 
+	element.style.setProperty("--destW",destCoord["width"]); element.style.setProperty("--destH",destCoord["height"]); 
+	element.classList.add("moveCard");
+	destination.appendChild(element);
+}
+
 function drawAction() {
 	drawContainer.style.display = "none";
 	includeListener(discard,"click", fromDiscard);
 	includeListener(deck,"click", fromDeck);
 	function fromDiscard(event) { 
-		draw.appendChild(discard.firstElementChild);
+		moveCard(discard.firstElementChild,draw);
 		purgeListeners();	placeAction();
 	}
 	function fromDeck(event) {
@@ -93,18 +102,19 @@ function drawAction() {
 function placeAction(fromDeck=false) {
 	drawContainer.style.display = "flex";
 	for (let slot of myHand.querySelectorAll("div.slot")) { includeListener(slot,"click",swapCards) }
-	if (fromDeck) { includeListener(discard,"click",trash) }
+	if (fromDeck) { includeListener(discard,"click",trash); console.log("fromDeck") }
 	function swapCards(event) {
 		selected = event.target; while(selected.className != "slot") { selected = selected.parentElement }
 		if (selected.firstElementChild.dataset.flipped = "true") { selected.firstElementChild.dataset.flipped = "false" }
 		if (discard.firstElementChild != null) { discard.firstElementChild.remove() }
+		
 		discard.appendChild(selected.firstElementChild);
 		selected.appendChild(draw.firstElementChild);
 		purgeListeners(); startTurn();
 	}
 	function trash(event) {
-		if (discard.firstElementChild != null) { discard.firstElementChild.remove() }
-		discard.appendChild(draw.firstElementChild);
+		if (discard.firstElementChild != null) { discard.firstElementChild.remove(); console.log("removed") }
+		discard.appendChild(draw.firstElementChild); console.log(discard);
 		purgeListeners(); startTurn();
 	}
 }

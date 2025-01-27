@@ -23,8 +23,10 @@ div#common {
 }
 #deck { background-image:url("../image/back.png"); border-radius: 15px; }
 div#drawContainer {
-	position: fixed; top: 20px; z-index: 99; width: 100vw;
+	position: fixed; top: 20px; z-index: 99; 
+	width: 100vw;
 	display: flex; align-items: center; justify-content: center;
+	pointer-events: none;
 }
 #draw div.card {
 	box-shadow: 10px 10px 10px 15px;
@@ -67,9 +69,23 @@ div.slot {
 	background-size: cover;	background-color: transparent;
 	display: flex; justify-content: center; align-items: center;
 	transition: transform 0.5s;
-} div.slot:hover {
+} div#common div.slot:hover, div#myHand div.slot:hover {
 	transform: translate(0,-10px) rotate(2deg);
 }
+@keyframes moveCard {
+	0% {
+		position: fixed;
+		top: var(--cardY,0); left: var(--cardX,0);
+	}
+	99% {
+		top: var(--destY,0); left: var(--destX,0);
+		width: var(--destW,150); height: var(--destH,200);
+	}
+	100% {
+		position: relative;
+	}
+}
+.moveCard { animation: moveCard 2s ease 0s 1 normal }
 div.card {
 	position: relative;
 	padding: 5px;
