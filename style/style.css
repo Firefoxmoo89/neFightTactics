@@ -12,25 +12,26 @@ body {
 	--ash-gray: #C7CDC3ff;
 }
 
+div#root {
+	display: flex; flex-flow: column nowrap; align-items: center; justify-content: space-between;
+	width: 100vw; height: 100vh;
+	padding: 20px;
+}
+
 /* --------------- common spaces -------------- */
 div#common {
-	position: fixed; top: 0px;
-	width: 100%; height: 50%;
-	padding: 10px;
+	width: 100%; max-height: 30%;
 	display: flex; justify-content: start; align-items: center; flex-flow: column nowrap;
 } div#common > div {
-	width: 900px; max-width: 98%; display: flex; justify-content: center; align-items: center; flex-flow: column nowrap;
+	width: 900px; max-width: 100%; max-height: 100%;
+	display: flex; justify-content: center; align-items: center; flex-flow: row nowrap;
+} 
+#deck { background-image:url("../image/back.png"); border-radius: 15px; transition: transform 0.5s;}
+@keyframes draw {
+	from { top: 0px	} 
+	to { top: 50px }
 }
-#deck { background-image:url("../image/back.png"); border-radius: 15px; }
-div#drawContainer {
-	position: fixed; top: 20px; z-index: 99; 
-	width: 100vw;
-	display: flex; align-items: center; justify-content: center;
-	pointer-events: none;
-}
-#draw div.card {
-	box-shadow: 10px 10px 10px 15px;
-}
+div.card.draw { animation: draw .5s linear 0s 1 normal; animation-fill-mode: forwards; }
 
 /* ---------- Other Players ----------------- */
 div#others {
@@ -51,41 +52,33 @@ div.playerIcon { background-image: url("../image/smileyface.png"); width: 50px; 
 
 /* ------------- Players hand ----------- */
 div#myHand {
-	position: fixed; bottom: 0px;
-	width: 100%; height: 50%;
-	padding: 10px;
+	width: 100%; max-height: 70%;
 	display: flex; justify-content: center; align-items: center;
 } div#myHand > div {
-	width: 900px; max-width: 98%;
+	width: 900px; max-width: 100%; height: 100%; 
 }
 div.row {
 	display: flex; justify-content: center; align-items: center; flex-flow: row nowrap;
 	width: 100%;
-}
+} div#myHand div.row { height: 50% }
 div.slot {
 	margin: 5px;
 	border: none;
-	aspect-ratio: 5/7; width: 150px;
+	aspect-ratio: 5/7; width: 150px; max-height: 100%;
 	background-size: cover;	background-color: transparent;
 	display: flex; justify-content: center; align-items: center;
-	transition: transform 0.5s;
-} div#common div.slot:hover, div#myHand div.slot:hover {
-	transform: translate(0,-10px) rotate(2deg);
-}
-@keyframes moveCard {
+} 
+@keyframes place {
 	0% {
-		position: fixed;
-		top: var(--cardY,0); left: var(--cardX,0);
-	}
-	99% {
-		top: var(--destY,0); left: var(--destX,0);
-		width: var(--destW,150); height: var(--destH,200);
+		top: var(--cardTop,0); left: var(--cardLeft,0);
+		width: var(--cardW,150px); height: var(--cardH,210px);
 	}
 	100% {
-		position: relative;
+		top: var(--destTop,0); left: var(--destLeft,0);
+		width: var(--destW,150px); height: var(--destH,210px);
 	}
 }
-.moveCard { animation: moveCard 2s ease 0s 1 normal }
+div.card.place { animation: place 1s ease 0s 1 normal }
 div.card {
 	position: relative;
 	padding: 5px;
@@ -93,7 +86,11 @@ div.card {
 	width: 100%; height: 100%;
 	display: flex; justify-content: center; align-items: center;
 	background-color: var(--ash-gray); 
+	transition: transform 0.5s;
 } div.card[data-flipped="true"] { padding: 0 }
+#deck:hover, div#common div.card:hover, div#myHand div.card:hover {
+	transform: translate(0,-10px) rotate(2deg);
+}
 div.card > h1 {
 	position: absolute; top: 0; left: 5px;
 	margin: 0; padding: 0;
