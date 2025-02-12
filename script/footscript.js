@@ -1,13 +1,13 @@
 const myHand = document.querySelector("#myHand").firstElementChild;
 const discard = document.querySelector("#discard");
+const discardData = [];
 const deck = document.querySelector("#deck");
-const drawContainer = document.querySelector("#drawContainer");
-const draw = document.querySelector("#draw");
 const others = document.querySelector("#others");
+import {shuffle,deckData,card,getStyle} from "./headscript.js";
 window.score = 0;
 
 // Setup other players
-otherCount = 2;
+var otherCount = 2;
 for (let i=0;i<otherCount;i++) {
 	others.innerHTML += "<div data-playindex=\""+i+"\" data-ai=\"true\"> \
 		<div> \
@@ -28,10 +28,10 @@ for (let i=0;i<otherCount;i++) {
 }
 
 // Deal deck into players hands
-allSlots = [].concat(Array.from(others.querySelectorAll("div.slot")),Array.from(myHand.querySelectorAll("div.slot")));
+var allSlots = [].concat(Array.from(others.querySelectorAll("div.slot")),Array.from(myHand.querySelectorAll("div.slot")));
 shuffle(allSlots);
 for (let slot of allSlots) {
-	newCard = deckData.shift();
+	let newCard = deckData.shift();
 	slot.appendChild(newCard.element);
 }
 for (let slot of myHand.firstElementChild.querySelectorAll("div.slot")) {
@@ -44,21 +44,20 @@ window.currentPlayer = -1;
 window.listenerList = [];
 function nextPlayer() {
 	window.currentPlayer++; 
-	console.log("nextisizing",window.currentPlayer);
 	if (window.currentPlayer > otherCount) { window.currentPlayer = 0 }
 }
 
 startTurn();
-function startTurn() {
+async function startTurn() {
 	nextPlayer();
-	console.log("div[data-playindex=\""+window.currentPlayer+"\"]");
-	player = document.querySelector("div[data-playindex=\""+window.currentPlayer+"\"]");
+	let player = document.querySelector("div[data-playindex=\""+window.currentPlayer+"\"]");
 	if (player.dataset.ai == "true") {
 		let randomSlot = player.querySelectorAll("div.slot")[Math.floor(Math.random()*8)];
-		console.log("randomSlot",randomSlot,randomSlot.firstElementChild);
 		if (discard.firstElementChild != null) { discard.firstElementChild.remove() }
-		discard.appendChild(randomSlot.firstElementChild);
-		randomSlot.appendChild(deckData.shift().element);
+		deck.appendChild(deckData.shift().element);
+		await drawAnimate(deck.firstElementChild);
+		await placeAnimate(randomSlot,discard);
+		await placeAnimate(deck,randomSlot);
 		startTurn();
 	} else if (player.id = "myHand") {
 		drawAction();
@@ -70,51 +69,67 @@ function includeListener(element,event,daFunction) {
 	window.listenerList.push([element,event,daFunction]);
 }
 function purgeListeners() {
+	let element,event,daFunction = [];
 	for ([element,event,daFunction] of window.listenerList) {
 		element.removeEventListener(event,daFunction);
 	} window.listenerList = [];
 }
-
-function moveCard(element,destination) {
-	element.classList.remove("moveCard");
-	cardCoord = element.getBoundingClientRect();
-	element.style.setProperty("--cardX",cardCoord["x"]); element.style.setProperty("--cardY",cardCoord["y"]);
-	destCoord = destination.getBoundingClientRect();
-	element.style.setProperty("--destX",destCoord["x"]); element.style.setProperty("--destY",destCoord["y"]); 
-	element.style.setProperty("--destW",destCoord["width"]); element.style.setProperty("--destH",destCoord["height"]); 
-	element.classList.add("moveCard");
-	destination.appendChild(element);
+function drawAnimate(card) {
+	card.classList.add("draw");
+}
+function placeAnimate(start,dest) { 
+	return new Promise(resolve => {
+		document.documentElement.style.pointerEvents = "none";
+		let card = start.firstElementChild; 
+		let cardCoord = card.getBoundingClientRect(); 
+		card.style.setProperty("--cardTop",cardCoord["top"]+"px"); card.style.setProperty("--cardLeft",cardCoord["left"]+"px");
+		card.style.setProperty("--cardW",cardCoord["width"]+"px"); card.style.setProperty("--cardH",cardCoord["height"]+"px"); 
+		let destCoord = dest.getBoundingClientRect(); console.log({card,cardCoord,destCoord});
+		card.style.setProperty("--destTop",destCoord["top"]+"px"); card.style.setProperty("--destLeft",destCoord["left"]+"px"); 
+		card.style.setProperty("--destW",destCoord["width"]+"px"); card.style.setProperty("--destH",destCoord["height"]+"px");
+		card.classList.remove("draw"); card.style.position = "fixed"; card.classList.add("place");
+		card.addEventListener("animationend", event => { 
+			dest.appendChild(card); 
+			card.classList.remove("place"); 
+			card.style.position = "relative";
+			document.documentElement.style.pointerEvents = "auto";
+			resolve();
+		},{once:true});
+	});
 }
 
 function drawAction() {
-	drawContainer.style.display = "none";
 	includeListener(discard,"click", fromDiscard);
 	includeListener(deck,"click", fromDeck);
-	function fromDiscard(event) { 
-		moveCard(discard.firstElementChild,draw);
-		purgeListeners();	placeAction();
+	async function fromDiscard(event) { 
+		drawAnimate(discard.firstElementChild);
+		purgeListeners();	placeAction(discard);
 	}
-	function fromDeck(event) {
-		draw.appendChild(deckData.shift().element);
-		purgeListeners();	placeAction(true);
+	async function fromDeck(event) {
+		if (deckData.length < 1) { shuffle(deckData,discardData); discardData = [] }
+		deck.appendChild(deckData.shift().element);
+		drawAnimate(deck.firstElementChild);
+		purgeListeners();	placeAction(deck);
 	}
 }
-function placeAction(fromDeck=false) {
-	drawContainer.style.display = "flex";
+function placeAction(startPosition) {
 	for (let slot of myHand.querySelectorAll("div.slot")) { includeListener(slot,"click",swapCards) }
-	if (fromDeck) { includeListener(discard,"click",trash); console.log("fromDeck") }
-	function swapCards(event) {
-		selected = event.target; while(selected.className != "slot") { selected = selected.parentElement }
+	if (startPosition === deck) { includeListener(discard,"click",trash) }
+	async function swapCards(event) {
+		let selected = event.target; while(selected.className != "slot") { selected = selected.parentElement }
 		if (selected.firstElementChild.dataset.flipped = "true") { selected.firstElementChild.dataset.flipped = "false" }
-		if (discard.firstElementChild != null) { discard.firstElementChild.remove() }
-		
-		discard.appendChild(selected.firstElementChild);
-		selected.appendChild(draw.firstElementChild);
+		if (discard.firstElementChild != null) { 
+			discardData.push(new card(discard.firstElementChild.dataset.value,discard.firstElementChild.dataset.special));
+			discard.firstElementChild.remove(); console.log(discardData);
+		}
+		await placeAnimate(selected,discard);
+		await placeAnimate(startPosition,selected);
+		if (discard.children.length > 1) { discard.firstElementChild.remove() }
 		purgeListeners(); startTurn();
 	}
-	function trash(event) {
-		if (discard.firstElementChild != null) { discard.firstElementChild.remove(); console.log("removed") }
-		discard.appendChild(draw.firstElementChild); console.log(discard);
+	async function trash(event) {
+		if (discard.firstElementChild != null) { discard.firstElementChild.remove() }
+		await placeAnimate(startPosition,discard);
 		purgeListeners(); startTurn();
 	}
 }
