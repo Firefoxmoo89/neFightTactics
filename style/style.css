@@ -32,7 +32,7 @@ div#common {
 	to { top: 50px }
 }
 div.card.draw { animation: draw .5s linear 0s 1 normal; animation-fill-mode: forwards; }
-
+#deck div.card:not(:last-of-type), #discard div.card:not(:last-of-type) { display: none }
 /* ---------- Other Players ----------------- */
 div#others {
 	position: fixed; top: 0px;
@@ -68,17 +68,22 @@ div.slot {
 	background-size: cover;	background-color: transparent;
 	display: flex; justify-content: center; align-items: center;
 } 
-@keyframes place {
+@keyframes moveCard {
 	0% {
-		top: var(--cardTop,0); left: var(--cardLeft,0);
-		width: var(--cardW,150px); height: var(--cardH,210px);
+		x: var(--x1,0); y: var(--y1,0);
+		width: var(--w1,150px); height: var(--h1,210px);
 	}
 	100% {
-		top: var(--destTop,0); left: var(--destLeft,0);
-		width: var(--destW,150px); height: var(--destH,210px);
+		top: var(--x2,0); left: var(--y2,0);
+		width: var(--w2,150px); height: var(--h2,210px);
 	}
 }
-div.card.place { animation: place 1s ease 0s 1 normal }
+div.card.move { 
+	position: fixed;
+	z-index: 99;
+	animation: moveCard 1s ease 0s 1 normal;
+	animation-fill-mode: forwards;
+}
 div.card {
 	position: relative;
 	padding: 5px;
@@ -87,7 +92,7 @@ div.card {
 	display: flex; justify-content: center; align-items: center;
 	background-color: var(--ash-gray); 
 	transition: transform 0.5s;
-} div.card[data-flipped="true"] { padding: 0 }
+} div.card.flipped { padding: 0 }
 #deck:hover, div#common div.card:hover, div#myHand div.card:hover {
 	transform: translate(0,-10px) rotate(2deg);
 }
@@ -102,13 +107,13 @@ div.card > h2 {
 	margin: 0; padding: 0;
 	font-size: 1em; color: var(--falu-red);
 }
-div.card[data-flipped="true"] > h1, div.card[data-flipped="true"] > h2 { display: none !important }
+div.card.flipped > h1, div.card.flipped > h2 { display: none !important }
 div.card > div.img {
 	width: 100%; height: 100%;
 	background-size: cover;	background-position: center center; background-repeat: no-repeat;
 	border-radius: 15px;
 }
-div.card[data-flipped="true"] > div.img { background-image:url("../image/back.png") !important }
+div.card.flipped > div.img { background-image:url("../image/back.png") !important }
 div.card[data-value="0"][data-special="false"] > div.img { background-image:url("../image/0.png") }
 div.card[data-value="1"][data-special="false"] > div.img { background-image:url("../image/1.png") }
 div.card[data-value="2"][data-special="false"] > div.img { background-image:url("../image/2.png") }
