@@ -26,13 +26,14 @@ div#common {
 	width: 900px; max-width: 100%; max-height: 100%;
 	display: flex; justify-content: center; align-items: center; flex-flow: row nowrap;
 } 
-#deck { background-image:url("../image/back.png"); border-radius: 15px; transition: transform 0.5s;}
+#deck { background-image:url("../image/back.png"); border-radius: 15px; transition: transform 0.5s; position: relative }
 @keyframes draw {
 	from { top: 0px	} 
 	to { top: 50px }
 }
 div.card.draw { animation: draw .5s linear 0s 1 normal; animation-fill-mode: forwards; }
-#deck div.card:not(:last-of-type), #discard div.card:not(:last-of-type) { display: none }
+#discard div.card:not(:first-of-type) { display: none }
+#deck div.card { position: absolute; left: 0; top: 0 }
 /* ---------- Other Players ----------------- */
 div#others {
 	position: fixed; top: 0px;
@@ -41,14 +42,13 @@ div#others {
 	display: flex; flex-flow: column nowrap; justify-content: start;
 } 
 div#others > div {
-	background-color: #791c219e;
 	margin: 5px; padding: 10px;
 	border-radius: 10px;
 }
 div#others > div > div {
 	width: 900px; max-width: 100%;
 }
-div.playerIcon { background-image: url("../image/smileyface.png"); width: 50px; height: 50px; margin: auto; background-size: cover }
+div.playerIcon { width: 50px; height: 50px; margin: auto; background-size: cover }
 
 /* ------------- Players hand ----------- */
 div#myHand {
@@ -70,19 +70,18 @@ div.slot {
 } 
 @keyframes moveCard {
 	0% {
-		x: var(--x1,0); y: var(--y1,0);
+		left: var(--x1,0); top: var(--y1,0);
 		width: var(--w1,150px); height: var(--h1,210px);
 	}
 	100% {
-		top: var(--x2,0); left: var(--y2,0);
+		left: var(--x2,0); top: var(--y2,0);
 		width: var(--w2,150px); height: var(--h2,210px);
 	}
 }
 div.card.move { 
-	position: fixed;
-	z-index: 99;
-	animation: moveCard 1s ease 0s 1 normal;
-	animation-fill-mode: forwards;
+	position: fixed; z-index: 99;
+	animation: moveCard 1s ease 0s 1 normal; animation-fill-mode: forwards;
+	pointer-events: none;
 }
 div.card {
 	position: relative;
