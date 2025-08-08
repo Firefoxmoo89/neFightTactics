@@ -42,7 +42,7 @@ class card {
 		if (!this.element.classList.contains("flipped")) { this.element.classList.add("flipped") } 
 		this.faceup = false; this.facedown = true;
 	} isDown() { return this.facedown }
-	move(destination) {
+	moveTo(destination) {
 		`"Destination" parameter must be the slot that the card is moving to`
 		let start = this.element.getBoundingClientRect();
 		this.element.style.setProperty("--x1",start["x"]+"px");	
@@ -68,6 +68,10 @@ class card {
 function moveCards(...objectPairs) {
 	`Enter cards and their destinations in pairs. ex: {card1,discard},{card2,slot1},...etc`
 	for ([daCard,destination] of objectPairs) {	daCard.move(destination) }
+}
+function cardInSlot(slot) {
+	`Pass in a slot in element form to return the card object within`
+	return w.cards[slot.firstElementChild.id]
 }
 
 w.idList = 1;
@@ -115,4 +119,4 @@ function slowDown(time,...lines) {
 	},time);
 }
 
-export {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, slowDown, Player};
+export {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, slowDown, Player,cardInSlot};

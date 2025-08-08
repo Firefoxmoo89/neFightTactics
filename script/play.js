@@ -1,4 +1,4 @@
-import {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards} from "./define.js";
+import {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, cardInSlot} from "./define.js";
 import {} from "./prep.js";
 const w = window;
 
@@ -14,49 +14,54 @@ while(true) {
 	if (w.deckData.length < 1) { shuffle(w.deckData,discardData); discardData = {} }
 
 	if (currentPlayer.ai) {
-		let randomSlot = currentPlayer.element.querySelectorAll("div.slot")[Math.floor(Math.random()*8)];
-		let newCard = w.deckData.shift();
-		deck.appendChild(newCard.element);
-		w.cards[randomSlot.firstElementChild.id].flipUp();
-		w.cards[randomSlot.firstElementChild.id].move(discard);
-		newCard.move(randomSlot);
+		async function aiTurn() { return new Promise(resolve => {
+			let selectedSlot = currentPlayer.element.querySelectorAll("div.slot")[Math.floor(Math.random()*8)];
+			let selectedCard = cardInSlot(selectedSlot);
+			let newCard = w.deckData.shift();
+			deck.appendChild(newCard.element);
+			selectedCard.flipUp();
+			selectedCard.moveTo(discard);
+			newCard.moveTo(selectedSlot);
+			newCard.element.addEventListener("animationend",event => { resolve() } );
+		})}; await aiTurn();
 	}
 	else {
 		await drawAction().then(placeAction)
 	}
 
-	w.playerIndex++; console.log(w.playerIndex == Object.keys(w.players).length);
+	w.playerIndex++;
 	if (w.playerIndex == Object.keys(w.players).length) { w.playerIndex = 0 }
 }
 
 async function drawAction() { return new Promise(resolve => {
 	
 	includeListener(discard,"click", fromDiscard); function fromDiscard(event) { 
-		w.cards[discard.firstElementChild.id].draw();
-		purgeListeners();	resolve(discard);
+		cardInSlot(discard).draw();
+		purgeListeners();	resolve(cardInSlot(discard));
 	}
 	
 	includeListener(deck,"click", fromDeck); function fromDeck(event) {
 		let newCard = w.deckData.shift();
 		deck.appendChild(newCard.element);
-		w.cards[deck.firstElementChild.id].draw();
-		purgeListeners();	resolve(deck);
+		cardInSlot(deck).draw();
+		purgeListeners();	resolve(cardInSlot(deck));
 	}
 })};
 
-async function placeAction(start) { return new Promise (resolve => {
+async function placeAction(newCard) { return new Promise (resolve => {
 
-	if (start == deck) { includeListener(discard,"click",trash) } function trash() {
-		w.cards[deck.firstElementChild.id].move(discard);
+	if (newCard.element == deck.firstElementChild) { includeListener(discard,"click",trash) } function trash() {
+		newCard.moveTo(discard);
 		purgeListeners(); resolve();
 	}
 	
 	for (let slot of myHand.querySelectorAll("div.slot")) { includeListener(slot,"click",placeCard) } function placeCard(event) {
-		let selected = event.target; while(selected.className != "slot") { selected = selected.parentElement }
-		w.cards[selected.firstElementChild.id].flipUp();
-		w.cards[selected.firstElementChild.id].move(discard);
-		w.cards[start.firstElementChild.id].move(selected);
-		resolve();
+		let selectedSlot = event.target; while(selectedSlot.className != "slot") { selectedSlot = selectedSlot.parentElement }
+		let selectedCard = cardInSlot(selectedSlot);
+		selectedCard.flipUp();
+		selectedCard.moveTo(discard);
+		newCard.element.addEventListener("animationend",event => { resolve() },{once:true});
+		newCard.moveTo(selectedSlot);
 	}
 })};
 

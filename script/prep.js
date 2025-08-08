@@ -1,4 +1,4 @@
-import {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, slowDown, Player} from "./define.js";
+import {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, slowDown, Player, cardInSlot} from "./define.js";
 const w = window;
 
 // Create cards and deck
@@ -19,12 +19,14 @@ var allSlots = [discard].concat(Array.from(others.querySelectorAll("div.slot")),
 shuffle(allSlots);
 
 w.recentlyMoved = 0;
-function flipStart() {
+function flipStart(event) {
 	w.recentlyMoved++;
-	if (w.recentlyMoved == allSlots.length) {
-		for (let slot of myHand.querySelectorAll(".row")[1].querySelectorAll("div.slot")) {	slot.firstElementChild.classList.remove("flipped") }
-		discard.firstElementChild.classList.remove("flipped");
-		document.removeEventListener("cardMoved",flipStart);
+	if (w.recentlyMoved == allSlots.length) { 
+		setTimeout(()=>{
+			for (let slot of myHand.querySelectorAll(".row")[1].querySelectorAll("div.slot")) {	slot.firstElementChild.classList.remove("flipped") }
+			discard.firstElementChild.classList.remove("flipped");
+			document.removeEventListener("cardMoved",flipStart);
+		},50);
 	}
 }
 document.addEventListener("cardMoved",flipStart);
@@ -34,8 +36,8 @@ let cardsMade = new CustomEvent("cardsMade");
 document.addEventListener("cardsMade",event=>{
 	let currentSlot = 0;
 	var intervalID = setInterval(()=>{
-		let daCard = w.cards[deck.firstElementChild.id];
-		daCard.move(allSlots[currentSlot]);
+		let daCard = cardInSlot(deck);
+		daCard.moveTo(allSlots[currentSlot]);
 		currentSlot++;
 		if (currentSlot == allSlots.length) { clearInterval(intervalID) }
 	},100);
