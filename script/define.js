@@ -9,7 +9,7 @@ function shuffle(array, array2=false) {
 }
 function getStyle(element,value,psuedoclass=null) {	return w.getComputedStyle(element,psuedoclass).getPropertyValue(value) }
 
-const myHand = document.querySelector("#myHand").firstElementChild;
+const myHand = document.querySelector("#myHand");
 const discard = document.querySelector("#discard");
 const discardData = [];
 const deck = document.querySelector("#deck");
@@ -20,7 +20,12 @@ w.cards = {};
 
 var cardMoved = new CustomEvent("cardMoved", { detail: { id: 1234 } });
 
-class card {
+function getRandomInt(min, max=null) {
+	if (max == null) { max = min; min = 0 }
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+class Card {
 	constructor(value,special=false) {
 		this.value = value;
 		this.special = special;
@@ -60,10 +65,24 @@ class card {
 		this.element.addEventListener("animationend",()=>{  
 			cardMoved = new CustomEvent("cardMoved", { detail: { id: this.id } });
 			document.dispatchEvent(cardMoved);
-			destination.prepend(this.element);
+			destination.appendChild(this.element);
 			this.element.classList.remove("move");
 		});
 	}
+	partnerCard() { 
+		let currentOwner = this.owner(); 
+		if (currentOwner != null) {
+			let index = currentOwner.cardIndex(this);
+			if (index < 4) { index += 4 } else { index -= 4 }
+			return currentOwner.cardInIndex(index);
+		} return null
+	}
+	owner() { 
+		for (let player of Object.values(w.players).slice(1)) { 
+			if (player.cardIndex(this) != null) { return player }
+		} return null
+	}
+	parentSlot() { return this.element.parentElement }
 }
 function moveCards(...objectPairs) {
 	`Enter cards and their destinations in pairs. ex: {card1,discard},{card2,slot1},...etc`
@@ -71,45 +90,52 @@ function moveCards(...objectPairs) {
 }
 function cardInSlot(slot) {
 	`Pass in a slot in element form to return the card object within`
-	return w.cards[slot.firstElementChild.id]
+	return w.cards[slot.lastElementChild.id]
 }
 
-w.idList = 1;
-myHand.dataset.player = 0;
-w.players = {"player0":{ai:false}};
+w.idList = 0;
+w.players = {};
 class Player {
-	constructor(name, color, iconRef="smileyface.svg", ai=false) {
+	constructor(name, color, iconRef="smileyface.svg", ai=false, user=false) {
 		this.name = name;
 		this.id = w.idList; w.idList++;
 		this.color = color+"9e";
-		this.ai = ai;
+		this.ai = ai; this.user = user;
 		this.iconRef = "../image/"+iconRef;
 		this.element = document.createElement("div"); this.element.id = "player"+this.id;
 		this.element.innerHTML = "<div> \
 			<div class=\"playerIcon\"></div> \
-				<div class=\"row\"> \
-					<div class=\"slot\"></div> \
-					<div class=\"slot\"></div> \
-					<div class=\"slot\"></div> \
-					<div class=\"slot\"></div> \
-				</div><div class=\"row\"> \
-					<div class=\"slot\"></div> \
-					<div class=\"slot\"></div> \
-					<div class=\"slot\"></div> \
-					<div class=\"slot\"></div> \
+				<div id=\"row"+this.id+".1\" class=\"row\"> \
+					<div id=\"slot"+this.id+".1\" class=\"slot\"></div> \
+					<div id=\"slot"+this.id+".2\" class=\"slot\"></div> \
+					<div id=\"slot"+this.id+".3\" class=\"slot\"></div> \
+					<div id=\"slot"+this.id+".4\" class=\"slot\"></div> \
+				</div><div id=\"row"+this.id+".2\" class=\"row\"> \
+					<div id=\"slot"+this.id+".5\" class=\"slot\"></div> \
+					<div id=\"slot"+this.id+".6\" class=\"slot\"></div> \
+					<div id=\"slot"+this.id+".7\" class=\"slot\"></div> \
+					<div id=\"slot"+this.id+".8\" class=\"slot\"></div> \
 				</div> \
 			</div>";
-		others.appendChild(this.element);
+		if (user) { myHand.appendChild(this.element) }
+		else { others.appendChild(this.element) }
 		w.players[this.element.id] = this;
 		this.element.style.backgroundColor = this.color;
 		this.element.querySelector("div.playerIcon").style.backgroundImage = "url(\""+this.iconRef+"\")";
 		this.element.querySelector("div.playerIcon").innerText = this.name;
 	}
+	getSlot(position) {	return this.element.querySelectorAll(".slot")[position] }
+	slotIndex(slot) { 
+		let slotList = this.element.querySelectorAll(".slot"); 
+		for (let i=0;i<slotList.length;i++) { 
+			if (slot == slotList[i]) { return i }
+		} return null
+	}
+	cardIndex(card) { return this.slotIndex(card.parentSlot()) }
+	cardInIndex(index) {
+		return w.cards[this.element.querySelectorAll("div.card")[index].id]
+	}
 }
-
-
-
-
 function slowDown(time,...lines) {
 	let count = 0;
 	var slowTime = setInterval(()=>{ 
@@ -119,4 +145,4 @@ function slowDown(time,...lines) {
 	},time);
 }
 
-export {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, slowDown, Player,cardInSlot};
+export {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,Card as card, moveCards, slowDown, Player,cardInSlot, getRandomInt};
