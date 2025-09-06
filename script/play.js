@@ -1,4 +1,4 @@
-import {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, cardInSlot} from "./define.js";
+import {shuffle,getStyle,myHand,discard,discardData,deck,others,cardMoved,card, moveCards, cardInSlot, getRandomInt} from "./define.js";
 import {} from "./prep.js";
 const w = window;
 
@@ -13,17 +13,55 @@ while(true) {
 
 	if (w.deckData.length < 1) { shuffle(w.deckData,discardData); discardData = {} }
 
-	if (currentPlayer.ai) {
-		async function aiTurn() { return new Promise(resolve => {
-			let selectedSlot = currentPlayer.element.querySelectorAll("div.slot")[Math.floor(Math.random()*8)];
-			let selectedCard = cardInSlot(selectedSlot);
-			let newCard = w.deckData.shift();
-			deck.appendChild(newCard.element);
-			selectedCard.flipUp();
-			selectedCard.moveTo(discard);
-			newCard.moveTo(selectedSlot);
-			newCard.element.addEventListener("animationend",event => { resolve() } );
-		})}; await aiTurn();
+	if (currentPlayer.ai) { 
+		async function aiTurn() { return new Promise(resolve => { setTimeout(()=>{
+			let unfulfilledCards = []; let selectedCard = null; let drawCard = cardInSlot(discard); console.log(drawCard);
+			for (let position=0;position<=3;position++) {
+				let soldierCard = cardInSlot(currentPlayer.getSlot(position));
+				let captainCard = cardInSlot(currentPlayer.getSlot(position+4));
+				if (captainCard.value != "P" && soldierCard.value != "P" && captainCard.value != soldierCard.value) {
+					unfulfilledCards.push(captainCard);
+					if (soldierCard.isUp()) { unfulfilledCards.push(soldierCard) }
+				} else if (soldierCard.isDown()) { unfulfilledCards.push(captainCard) }
+			} 
+			if (unfulfilledCards.length == 0) { debugger /*Knock!*/ }
+
+			if (drawCard.value == "P") { 
+				let randomIndex = getRandomInt(unfulfilledCards.length);
+				selectedCard = unfulfilledCards[randomIndex].partnerCard();
+			}	else {
+				for (let daCard of unfulfilledCards) {
+					if (daCard.value == drawCard.value) { selectedCard = daCard.partnerCard(); break }
+				}
+				if (selectedCard == null) { 
+					drawCard = w.deckData.shift();
+					deck.appendChild(drawCard.element);
+					drawCard.draw();
+					if (drawCard.value == "P") {
+						let randomIndex = getRandomInt(unfulfilledCards.length);
+						selectedCard = unfulfilledCards[randomIndex].partnerCard();
+					}
+					for (let daCard of unfulfilledCards) {
+					if (daCard.value == drawCard.value) { selectedCard = daCard.partnerCard(); break }
+					}
+					if (selectedCard == null) { 
+						let flippedList = currentPlayer.element.querySelector(".row").querySelectorAll("div.card.flipped");
+						if (flippedList.length > 1) {
+							let randomIndex = getRandomInt(flippedList.length);
+							selectedCard = w.cards[flippedList[randomIndex].id];
+						} else { selectedCard = discard }
+					}
+				}
+			}
+			let selectedSlot = selectedCard;
+			if (selectedCard != discard) {
+				selectedSlot = selectedCard.parentSlot();
+				selectedCard.flipUp();
+				selectedCard.moveTo(discard) 
+			}
+			drawCard.moveTo(selectedSlot);
+			drawCard.element.addEventListener("animationend",event => { resolve() } );
+		},100);})}; await aiTurn();
 	}
 	else {
 		await drawAction().then(placeAction)
@@ -52,7 +90,8 @@ async function placeAction(newCard) { return new Promise (resolve => {
 
 	if (newCard.element == deck.firstElementChild) { includeListener(discard,"click",trash) } function trash() {
 		newCard.moveTo(discard);
-		purgeListeners(); resolve();
+		newCard.element.addEventListener("animationend",event => { resolve() },{once:true});
+		purgeListeners();
 	}
 	
 	for (let slot of myHand.querySelectorAll("div.slot")) { includeListener(slot,"click",placeCard) } function placeCard(event) {
@@ -62,6 +101,7 @@ async function placeAction(newCard) { return new Promise (resolve => {
 		selectedCard.moveTo(discard);
 		newCard.element.addEventListener("animationend",event => { resolve() },{once:true});
 		newCard.moveTo(selectedSlot);
+		purgeListeners();
 	}
 })};
 
