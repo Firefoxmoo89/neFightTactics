@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en"><head>
+
+	<title>NeFight Tactics</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="/icon/favicon.svg">
+	<link rel="stylesheet" href="/style/style.css">
+	<link rel="manifest" href="/manifest.json">
+	<meta name="theme-color" content="#791C20">
+
+
+</head><body>
+	<div id="others"></div>
+
+	<div id="root">
+
+		<div id="common">
+			<div>
+				
+					<div id="discard" class="slot"></div>
+					<div id="deck" class="slot"></div>
+				
+			</div>
+		</div>
+
+		<div id="myHand"></div>
+
+	</div>
+
+	<script src="/js/app.js"></script>
+	<script>
+		const w = window;
+		w.myHand = document.querySelector("#myHand");
+		w.discard = document.querySelector("#discard");
+		w.discardData = [];
+		w.deck = document.querySelector("#deck");
+		w.others = document.querySelector("#others");
+	
+		w.gameSettings = JSON.stringify(localStorage.getItem("gameSettings"));
+		if (w.gameSettings == null) { window.location.replace("/") }
+	</script>
+	<script src="script/offlineServer.js" type="module"></script>
+	
+
+</body></html>
