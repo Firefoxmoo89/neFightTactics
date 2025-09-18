@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+	<title>NeFight Tactics</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="/icon/favicon.svg">
+	<link rel="stylesheet" href="/style/style.css"><link rel="stylesheet" href="/style/home.css">
+	<link rel="manifest" href="/manifest.json">
+	<meta name="theme-color" content="#791C20">
+
+
+</head><body>
+
+
+	<div id="root">
+		<div class="artwork"><div class="img"></div></div>
+		<div id="menu" class="stroke">
+			<h1 class="bold">NeFight Tactics</h1>
+
+			<button type="button" id="onlineButton">Play Online (2-6 Players)</button>
+			<div id="online" class="hidden">
+				<p>Use this mode to connect to our game servers and play a game with friends or strangers!<br><span class="bold">This mode is unavailable</span></p>
+				<div><button type="button" id="onlineHost">Host Game</button></div>
+				<div>
+					<input type="text" id="onlineCode" name="onlineCode"><label for="onlineCode">Room Code</label>
+					<button type="button" id="onlineJoin">Join</button>
+				</div>
+				<button type="button" id="closeOnline">Close</button>
+			</div>
+
+			<button type="button" id="localButton">Play Local (2-6 Players, requires host)</button>
+			<div id="local" class="hidden">
+				<p>Use this mode to connect to your own game server that has the server host downloaded. <br>Use this link to download the host.<br>You must either be on the same wifi and use the local ip address or use the public ip address and port if you have opened an external port on your wifi network.<br><span class="bold">This mode is unavailable</span></p>
+				<div>
+					<input type="text" id="localIP" name="localIP"><label for="localIP">IP Address</label>
+					<button type="button" id="localJoin">Join</button>
+				</div>
+				<button type="button" id="closeLocal">Close</button>
+			</div>
+
+			<button type="button" id="offlineButton">Play Offline (1 Player)</button>
+
+			<button type="button" id="settingsButton">Settings</button>
+			<div id="settings" class="hidden">
+				<h2>Profile</h2>
+				<div><label for="username">Username</label><input type="text" id="username" name="username"></div> 
+				<button type="button" id="closeSettings">Close</button>
+			</div>
+		</div>
+		<div class="artwork"><div class="img"></div></div>
+	</div>
+
+	<script src="/script/app.js" type="module"></script>
+	<script src="/script/home.js" type="module"></script>
+</body></html>
