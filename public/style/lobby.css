@@ -1,0 +1,73 @@
+div#root { justify-content: space-around }
+
+div#toolbar {
+	display: flex; flex-flow: row wrap; align-items: center; justify-content: space-evenly;
+	width: 100%; padding: 0 50px;
+}
+div#code { padding: 10px; border-radius: 5px; border: 2px solid var(--themeColor) }
+
+div#players {
+	display: flex; flex-flow: row nowrap; align-items: center; justify-content: space-evenly;
+	width: 800px; max-width: 95vw; height: var(--appHeight);
+}
+
+div#players > div { 
+	display: flex; flex-flow: column nowrap; align-items: center; justify-content: space-evenly;
+	width: 33%; height: 95%;
+	margin: 10px;
+}
+div.slot {
+	width: 100%; aspect-ratio: 1/1.5;
+	background-color: rgba(var(--lightThemeColorRGB),.8);
+	border-radius: 15px;
+	display: flex; flex-flow: column nowrap; align-items: center; justify-content: end;
+}
+div.slot > p:first-child { margin: 5px }
+div.card {
+	width: 100%; flex-grow: 1;
+	background-color: var(--brightColor); color: var(--brightColor);
+	border-radius: 15px;
+	display: flex; flex-flow: column nowrap; align-items: center; justify-content: center;
+	overflow: hidden;
+}
+div.card div.img {
+	background-repeat: no-repeat; background-position: center center; background-size: contain;
+	width: 100%; height: 80%;
+	background-image: url("/image/smileyface.png");
+}
+div.card div.name {
+	display: flex; flex-flow: row nowrap; align-items: center; justify-content: start;
+	padding: 0 15px;
+	background-color: var(--themeColor);
+	width: 100%; height: 10%;
+	font-size: 1.2rem;
+} 
+div.card div.bottom {
+	display: flex; flex-flow: row nowrap; align-items: center; justify-content: center;
+	background-color: var(--themeColor);
+	width: 100%; height: 10%;
+	font-size: .95rem;
+}
+div.card div.type {
+	display: flex; flex-flow: row nowrap; align-items: center; justify-content: center;
+	padding: 10px;
+	height: 100%; width: 75%;
+}
+div.card div.level {
+	display: flex; flex-flow: row nowrap; align-items: center; justify-content: center;
+	height: 100%; width: 25%;
+}
+
+@media (orientation: portrait) or (max-aspect-ratio: 1/2) {
+	div#players {
+		flex-flow: column nowrap; align-items: start;
+	}
+	div#players > div {
+		flex-flow: row-reverse;
+		width: 100%;
+	}
+	div.slot {
+		width: 40%;
+	}
+	
+}
