@@ -1,9 +1,14 @@
 class res {
 	constructor() {
 		console.log("Making a response");
+		this.httpCode = null;
+	}
+	status(code) {
+		this.httpCode = code;
 	}
 	event(object) {
-		return new CustomEvent("request", object)
+		if (this.httpCode != null) { object["status"] = this.httpCode }
+		return new CustomEvent("response", object);
 	}
 	json(object) {
 		document.dispatchEvent(this.event(object));
@@ -16,7 +21,9 @@ class express {
 		this.callbacks = { post: {} }
 		document.addEventListener("request", event => {
 			console.log("Received request");
-			this.callbacks.post[event.detail.source](event.detail, new res);
+			let daFunction = this.callback.post[event.detail.source];
+			if (daFunction != null) { daFunction(event.detail, new res) }
+			else { 
 		});
 	}
 	post(path, callback) {
