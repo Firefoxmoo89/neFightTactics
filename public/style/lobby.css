@@ -9,6 +9,7 @@ div#code { padding: 10px; border-radius: 5px; border: 2px solid var(--themeColor
 div#players {
 	display: flex; flex-flow: row nowrap; align-items: center; justify-content: space-evenly;
 	width: 800px; max-width: 95vw; height: var(--appHeight);
+	overflow-y: auto; overflow-x: hidden;
 }
 
 div#players > div { 
