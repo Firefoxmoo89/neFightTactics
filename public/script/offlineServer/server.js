@@ -63,8 +63,32 @@ app.post("/lobby", (req,res) => {
 		res.redirect("/play");
 	}
 });
-app.post("/play", (req,res) => {
+app.post("/play", (req,res) => { res.resolved = false;
 	console.log({req,res});
+	if (gameData.currentPlayer == req.player) {
+		if (req.draw) {
+			var [daCard, gameData] = Moderator.draw(req.gameData);
+			res.status(200).json({ card: daCard });
+		}
+		if (req.place) {
+			if (req.slot >= 0 && req.slot <= 7) { 
+				var [daCard, gameData] = Moderator.place(req.gameData);
+				res.status(200).json( { card: daCard } );
+				req.resolved = true;
+			} else {
+				res.status(400).json({
+					message: "Your slot option was invalid. Game was either corrupted or tampered with (It's never the developers fault). The request key 'slot' was set to"+req.slot+", when it should be in the range 0-7"
+				});
+			}
+		}
+		if (req.discard) {
+			gameData = Moderator.discard();
+			res.status(200).json({ message: "success"	});
+			req.resolved = true;
+		}
+	}
+	if (req.update) {	updateList.push([req,res]) }
+	if (req.resolved) { updateList = updateClients() }
 });
 
 
