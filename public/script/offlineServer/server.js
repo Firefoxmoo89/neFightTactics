@@ -47,6 +47,14 @@ class express {
 }
 
 app = express();
+var gameData;
+var updateList = [];
+function updateClients() {
+	for (let res of updateList) {
+		res.status(200).json({ gameData: gameData });
+	}
+	return []
+}
 
 app.post("/lobby", (req,res) => {
 	console.log({req,res});
