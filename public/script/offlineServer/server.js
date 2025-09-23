@@ -58,7 +58,7 @@ function updateClients() {
 
 app.post("/lobby", (req,res) => {
 	console.log({req,res});
-	else if (req.gameData.status = "start") { 
+	if (req.gameData.status = "start") { 
 		gameData = Moderator.startGame(req.gameData); // Run async
 		res.redirect("/play");
 	}
