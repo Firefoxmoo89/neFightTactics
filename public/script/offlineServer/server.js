@@ -2,13 +2,14 @@ import * as Bots from "./bots.js"
 import * as Cards from "./cards.js"
 import * as Moderator from "./manage.js"
 
-class res {
+class Response {
 	constructor() {
 		console.log("Making a response");
 		this.httpCode = null;
 	}
 	status(code) {
 		this.httpCode = code;
+		return this
 	}
 	event(object) {
 		if (this.httpCode != null) { object["status"] = this.httpCode }
@@ -16,6 +17,10 @@ class res {
 	}
 	json(object) {
 		document.dispatchEvent(this.event(object));
+	}
+	redirect(location, replace=true) {
+		if (replace) { window.location.replace = location }
+		else { window.location.href = location }
 	}
 }
 
