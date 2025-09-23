@@ -30,9 +30,15 @@ class express {
 		this.callbacks = { post: {} }
 		document.addEventListener("request", event => {
 			console.log("Received request");
-			let daFunction = this.callback.post[event.detail.source];
-			if (daFunction != null) { daFunction(event.detail, new res) }
+			let daFunction = this.callbacks.post[event.detail.source];
+			if (daFunction != null) { daFunction(event.detail, new Response) }
 			else { 
+				console.error("Offline request invalid", event);
+				let daResponse = new Response();
+				daResponse.status(400).json({ 
+					message: "Invalid request: source / API endpoint could not be found" 
+				});
+			}
 		});
 	}
 	post(path, callback) {
