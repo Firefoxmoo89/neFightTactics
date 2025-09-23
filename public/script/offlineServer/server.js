@@ -1,3 +1,7 @@
+import * as Bots from "./bots.js"
+import * as Cards from "./cards.js"
+import * as Moderator from "./manage.js"
+
 class res {
 	constructor() {
 		console.log("Making a response");
