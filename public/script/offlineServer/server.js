@@ -47,7 +47,7 @@ class expressServer {
 }
 var express = () => { return new expressServer() }
 
-app = express();
+var app = express();
 var gameData;
 var updateList = [];
 function updateClients() {
