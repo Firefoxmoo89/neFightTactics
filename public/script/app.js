@@ -36,12 +36,12 @@ async function offlineFetch(source, options, callback) {
   document.dispatchEvent(request);
 }
 
-async function fetchadids(source, callback) {
-  if (sessionStorage.getItem("mode") == "offline") {
-    offlineFetch(source, callback);
+export async function fetchadids(source, options, callback) {
+  if (JSON.parse(localStorage.getItem("gameData")).mode.toLowerCase() == "offline") {
+    offlineFetch(source, options, callback);
   } else {
-    let source = sessionStorage.getItem("source");
-    throw new Error("API endpoint not configured you silly goose");
+    let source = localStorage.getItem("source");
+    console.error("API endpoint not configured you silly goose");
     /*serverFetch(source,"json",{
       method: "POST",
       body: { 
