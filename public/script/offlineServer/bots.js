@@ -1,4 +1,4 @@
-import {Player} from define.js
+/*import {Player} from "./player.js"
 
 class botPlayer extends Player {
 	constructor(name) {
@@ -15,8 +15,8 @@ class botPlayer extends Player {
 		})
 	}
 }
-
-var characters = {
+*/
+export var botData = {
 	"George": {
 		"color": "#aa4412",
 		"iconRef": "smileyface.svg",
