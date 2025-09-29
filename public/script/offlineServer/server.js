@@ -24,7 +24,7 @@ class Response {
 	}
 }
 
-class express {
+class expressServer {
 	constructor() {
 		console.log("offline server started");
 		this.callbacks = { post: {} }
@@ -45,6 +45,7 @@ class express {
 		this.callbacks.post[path] = callback;
 	}
 }
+var express = () => { return new expressServer() }
 
 app = express();
 var gameData;
