@@ -51,3 +51,23 @@ export async function fetchadids(source, options, callback) {
     }, callback);*/
   }
 }
+
+export async function checkGameData() {
+  if (sessionStorage.getItem("sessionGame") == null) {
+    if (localStorage.getItem("gameData") == null) { window.location.replace("/home") }
+    else {
+      let gameData = JSON.parse(localStorage.getItem("gameData"));
+      let promptText = "Want to load your old game data?\n";
+      for (let [key, value] of Object.entries(gameData)) { promptText += key+": "+value+"\n" }
+      if (confirm(promptText)) {
+        sessionStorage.setItem("sessionGame",true);
+      } else { window.location.replace("/home") }
+    }
+  }
+  let gameData = JSON.parse(sessionStorage.getItem("gameData"));
+  if (!gameData.mode) {
+    window.location.replace("/home");
+  } else if (gameData.mode.toLowerCase() == "offline") {
+    await import("/script/offlineServer/server.js"); 
+  } 
+}
