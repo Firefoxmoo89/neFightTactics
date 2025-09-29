@@ -13,10 +13,10 @@ class Response {
 	}
 	event(object) {
 		if (this.httpCode != null) { object["status"] = this.httpCode }
-		return new CustomEvent("response", object);
+		return new CustomEvent("response", {detail:object});
 	}
 	json(object) {
-		document.dispatchEvent(this.event(object));
+		document.dispatchEvent(this.event(object)); console.log("dispatched response");
 	}
 	redirect(location, replace=true) {
 		if (replace) { window.location.replace = location }
