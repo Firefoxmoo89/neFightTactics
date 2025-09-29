@@ -101,15 +101,7 @@ app.post("/play", (req,res) => { res.resolved = false;
 
 
 
-
-
-
-
-
-
-
-
-
+/*
 import * as Cards from "./cards.js";
 import * as Player from "./player.js";
 
@@ -175,3 +167,4 @@ for (cardCount in allSlots) {
 }
 
 w.currentPlayer = -1;
+*/
