@@ -26,13 +26,13 @@ async function serverFetch(source, type, options, daFunction=false) {
 	.then(data => { if (daFunction != false) { daFunction(data) } else { console.log("fetch at",source,":",data) } })
 }
 
-async function offlineFetch(source, callback) {
-  let request = new CustomEvent("request", {
+async function offlineFetch(source, options, callback) {
+  Object.assign(options, {
     source: source,
-    currentTurn: w.currentTurn,
-    playerLayout: w.playerLayout
-  });
-  document.addEventListener("response", callback);
+  }); console.log(options);
+  let request = new CustomEvent("request", {detail: options}); 
+  console.log(request);
+  document.addEventListener("response", event => { callback(event.detail) }, {once:true});
   document.dispatchEvent(request);
 }
 
