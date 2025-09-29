@@ -6,7 +6,7 @@ const ASSETS_TO_CACHE = [
   "/html/home.html",
   "/html/lobby.html",
   "/html/play.html",
-  "/css/style.css",
+  "/style/style.css",
   "/script/app.js", //Still gotta work on scripts
   "/manifest.json",
   "/image/0.png",
