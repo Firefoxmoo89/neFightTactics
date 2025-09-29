@@ -59,7 +59,10 @@ function updateClients() {
 
 app.post("/lobby", (req,res) => {
 	console.log({req,res});
-	if (req.gameData.status = "start") { 
+	if (req.botData) { console.log(Bots.botData);
+		res.status(200).json({botData:Bots.botData});
+	}
+	else if (req.startGame) { 
 		gameData = Moderator.startGame(req.gameData); // Run async
 		res.redirect("/play");
 	}
