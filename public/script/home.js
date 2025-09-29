@@ -23,8 +23,11 @@ localDiv.querySelector("#closeLocal").addEventListener("click", event => {
 
 const offlineButton = menuDiv.querySelector("#offlineButton");
 offlineButton.addEventListener("click", event => {
-	sessionStorage.setItem("gameMode","offline");
-	localStorage.setItem("gameMode","offline");
+	let gameData = JSON.stringify({
+		mode: "Offline",
+		status: "In Lobby"
+	});
+	localStorage.setItem("gameData",gameData);
 	window.location.href = "/lobby";
 });
 
