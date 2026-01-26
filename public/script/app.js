@@ -13,10 +13,36 @@ w.addEventListener('resize', setAppHeight);
 w.addEventListener('orientationchange', setAppHeight);
 setAppHeight();
 
-w.getRandomInt = (min, max=null) => {
-		if (max == null) { max = min; min = 0 }	max--;
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-		}
+export var storage = new Proxy({
+  clear() { localStorage.clear() }
+}, {
+  get(target, prop) { 
+    if (typeof target[prop] == "function") { return target[prop] }
+    if (typeof prop !== 'string') throw new TypeError('Keys must be strings');
+    let value = localStorage.getItem(prop); console.log("get",target,prop);
+    return value != null ? JSON.parse(value) : undefined 
+  },
+  set(_, prop, value) { 
+    if (typeof prop !== 'string') throw new TypeError('Keys must be strings');
+    console.log(prop,value);
+    localStorage.setItem(prop,JSON.stringify(value)); return true 
+  },
+  deleteProperty(_, prop) { 
+    if (typeof prop !== 'string') throw new TypeError('Keys must be strings');
+    localStorage.removeItem(prop); return true 
+  }
+}); w.storage = storage;
+
+let defaultProfile = {
+  name: "Guest",
+  icon: "/image/smileyface.svg",
+  color: "#791C20ff",
+  type: "player"
+};
+if (!storage.profile) { storage.profile = defaultProfile }
+for (let item of ["name","icon","color","type"]) {
+  if (storage.profile[item] == undefined) { storage.profile[item] = defaultProfile[item] }
+}
 
 async function serverFetch(source, type, options, daFunction=false) {
 	if (type == "json") { function process(response){return response.json()} } 
@@ -29,18 +55,17 @@ async function serverFetch(source, type, options, daFunction=false) {
 async function offlineFetch(source, options, callback) {
   Object.assign(options, {
     source: source,
-  }); console.log(options);
+  });
   let request = new CustomEvent("request", {detail: options}); 
-  console.log(request);
   document.addEventListener("response", event => { callback(event.detail) }, {once:true});
   document.dispatchEvent(request);
 }
 
 export async function fetchadids(source, options, callback) {
-  if (JSON.parse(localStorage.getItem("gameData")).mode.toLowerCase() == "offline") {
+  if (storage.gameData.mode.toLowerCase() == "offline") {
     offlineFetch(source, options, callback);
   } else {
-    let source = localStorage.getItem("source");
+    let source = storage.source;
     console.error("API endpoint not configured you silly goose");
     /*serverFetch(source,"json",{
       method: "POST",
@@ -54,20 +79,24 @@ export async function fetchadids(source, options, callback) {
 
 export async function checkGameData() {
   if (sessionStorage.getItem("sessionGame") == null) {
-    if (localStorage.getItem("gameData") == null) { window.location.replace("/home") }
-    else {
-      let gameData = JSON.parse(localStorage.getItem("gameData"));
+    if (storage.game == undefined) { 
+      if (window.location.pathname != "/home") { window.location.replace("/home") }
+    } else {
       let promptText = "Want to load your old game data?\n";
-      for (let [key, value] of Object.entries(gameData)) { promptText += key+": "+value+"\n" }
+      for (let [key, value] of Object.entries(storage.game)) { promptText += key+": "+value+"\n" }
       if (confirm(promptText)) {
         sessionStorage.setItem("sessionGame",true);
-      } else { window.location.replace("/home") }
+        if (storage.game.status == "In Lobby") { window.location.replace("/lobby") }
+        else { window.location.replace("/play") }
+      } else { 
+        storage.clear();
+        window.location.replace("/home");
+      }
     }
   }
-  let gameData = JSON.parse(sessionStorage.getItem("gameData"));
-  if (!gameData.mode) {
-    window.location.replace("/home");
-  } else if (gameData.mode.toLowerCase() == "offline") {
-    await import("/script/offlineServer/server.js"); 
-  } 
-}
+  if (storage.game) {
+    if (storage.game.mode.toLowerCase() == "offline") {
+      await import("/script/offlineServer/server.js"); 
+    } 
+  }
+} checkGameData();
