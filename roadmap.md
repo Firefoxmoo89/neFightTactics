@@ -38,3 +38,44 @@ Play page
 		setup offlineServer.js
 		have the normal js refer to the offlineServer.js file the same as it would a regular server, using events as fetch promises
 	User's page asks the server for updates, then copies that to it's own view. The server keeps track of turns to update each device without interference. 
+
+
+storage {
+	game: { // Just the structure; peudocode of how I want the gameData to be organized
+		mode: "",
+		actions: [
+			{ player: ..., type: ..., info: ..., round: ... },
+			{ player: ..., type: ..., info: ..., round: ... },
+			{ player: ..., type: ..., info: ..., round: ... },
+			{ player: ..., type: ..., info: ..., round: ... },
+		],
+		currentPlayer: ...,
+		deck: [],
+		status: "",
+		players: {
+			[token]: {
+				cardList: []; // Only visible given to client
+				icon: ...,
+				color: ...,
+				name: ...	
+			},
+		},
+	},
+	profile: {
+    name: "",
+    icon: "",
+    color: "",
+    type: ""
+  },
+	botData: {},
+}
+
+
+
+// Only pull actions when watching, then when currentPlayer is you, pull player list to check visibility
+
+localStorage {
+	gameData: ...,
+	profile: ...,
+	botData: ...,
+}
