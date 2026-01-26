@@ -1,4 +1,5 @@
-const w = window;
+import { getRandomInt } from "./radicalModule.js";
+import * as App from "./app.js"
 
 const rootDiv = document.querySelector("#root");
 const menuDiv = rootDiv.querySelector("#menu"); 
@@ -23,11 +24,11 @@ localDiv.querySelector("#closeLocal").addEventListener("click", event => {
 
 const offlineButton = menuDiv.querySelector("#offlineButton");
 offlineButton.addEventListener("click", event => {
-	let gameData = JSON.stringify({
+	App.storage.game = {
 		mode: "Offline",
 		status: "In Lobby"
-	});
-	localStorage.setItem("gameData",gameData);
+	};
+	sessionStorage.setItem("sessionGame",true);
 	window.location.href = "/lobby";
 });
 
@@ -39,13 +40,22 @@ menuDiv.querySelector("#settingsButton").addEventListener("click", event => {
 settingsDiv.querySelector("#closeSettings").addEventListener("click", event => {
 	settingsDiv.classList.add("hidden");
 });
+let profileOptions = settingsDiv.querySelector("#profileSettings").querySelectorAll("input");
+for (let option of profileOptions) { 
+	option.value = App.storage.profile[option.name];
+	option.addEventListener("change", event => { 
+		console.log("before",App.storage.profile[event.target.name]);
+		App.storage.profile[event.target.name] = "boohooohooohoooo";
+		console.log("after",App.storage.profile[event.target.name]);
+	});
+}
 
 function changeArtwork() {
 	let artworkList = document.querySelectorAll("div.artwork div.img"); let name;
 	if (artworkList[0].style.display != "none") {
 		for (let artwork of artworkList) {
 			artwork.parentElement.classList.remove("full");
-			let index = w.getRandomInt(0,12);
+			let index = getRandomInt(0,12);
 			if (index > 6) { 
 				name = ["add","assassin","back","extra","protect"][index-7];
 				if (name == "back") { artwork.parentElement.classList.add("full")	}
