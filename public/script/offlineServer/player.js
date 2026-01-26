@@ -1,4 +1,31 @@
-const w = window;
+import * as rad from "../radicalModule.js" 
+
+export function generateToken(tokenList=[]) {
+	let final = undefined; let index;
+	while (final == undefined || tokenList.includes(final)) {
+		final = "";
+		for (let i=0; i<4; i++) {
+			index = rad.getRandomInt(rad.alphanumeric.length);
+			final += rad.alphanumeric[index];
+		}
+	} return final
+}
+
+export var defaultProfile = {
+	name: "Guest",
+	icon: "/image/smileyface.svg",
+	color: "#791C20ff",
+	type: "player"
+}
+
+
+
+
+
+
+
+
+/*const w = window;
 w.idList = 0;
 w.players = {};
 
@@ -50,3 +77,4 @@ class Player {
 		console.log("I'm turning the wheel");
 	}
 }
+	*/
